@@ -6,7 +6,7 @@ v1 = client.CoreV1Api()
 current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 print("Listing pods in namespace ",current_namespace," their IPs:")
 
-pods = kube_client.list_namespaced_pod(current_namespace).items
+pods = v1.list_namespaced_pod(current_namespace).items
 # ret = v1.list_pod_for_all_namespaces(watch=False)
 # try:
 #     api_response = v1.delete_namespaced_pod(name, namespace)
