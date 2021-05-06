@@ -25,7 +25,6 @@ pod_names = []
 for pod in pods.items:
     pod_names.append(pod.metadata.name)
 
-print(workflow)
 pod_names = [pod for pod in pod_names if re.match(r"^"+str(workflow)+"-[.]*", pod)]
 print("Pods to be removed: "+str(pod_names)[1:-1] )
 for pod_name in pod_names:
