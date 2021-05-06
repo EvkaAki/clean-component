@@ -10,12 +10,16 @@ parser = argparse.ArgumentParser(description='Find and delete run pods.')
 parser.add_argument('--workflow', type=str,
   help='Path of the local file containing the Workflow name.')
 args = parser.parse_args()
-print(args)
-
 workflow = args
-pods = v1.list_namespaced_pod(current_namespace).items
+
+try:
+    pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
+    print(api_response)
+except ApiException as e:
+    print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+
 pod_names = []
-for pod in pods:
+for pod in pods.items:
     pod_names.append(pod.metadata.name)
 
 pod_names = [[pod for pod in pods if re.match(r"+workflow_name+", pod)]]
