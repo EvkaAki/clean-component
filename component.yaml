@@ -1,0 +1,17 @@
+name: Clear pods
+description: Clear pods used to run the containers in pipeline run
+metadata:
+  annotations:
+    author: Eva Nedeliaková <evanedeliakova@gmail.com>
+inputs:
+  - {name: workflow, type: String, description: 'Workflow name used to match pods to delete.'}
+implementation:
+  container:
+    # The strict name of a container image that you've pushed to a container registry.
+    image: endocker299/clean-pods:latest
+    command: [
+        python3,
+        /app/deleteRunPods.py,
+        --workflow,
+        { inputValue: Parameter 1 },
+    ]
