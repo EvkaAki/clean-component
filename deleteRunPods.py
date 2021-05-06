@@ -1,6 +1,9 @@
 from kubernetes import client, config
+from kubernetes.client.rest import ApiException
+
 import argparse
 import re
+
 
 config.load_incluster_config()
 
