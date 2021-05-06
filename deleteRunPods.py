@@ -15,6 +15,7 @@ workflow_name = args.workflow
 pods = v1.list_namespaced_pod(current_namespace).items
 r = re.compile(".*"+workflow_name)
 pods = list(filter(r.match, pods))
+
 # ret = v1.list_pod_for_all_namespaces(watch=False)
 # try:
 #     api_response = v1.delete_namespaced_pod(name, namespace)
