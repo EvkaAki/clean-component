@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 workflow_name = args.workflow_name
 pods = v1.list_namespaced_pod(current_namespace).items
-print(args)
+print(str(args)
 print(workflow_name)
 r = re.compile(".*"+workflow_name)
 pods = list(filter(r.match, pods))
