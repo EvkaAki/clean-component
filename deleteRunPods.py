@@ -25,7 +25,7 @@ for pod in pods.items:
     pod_names.append(pod.metadata.name)
 
 print(pod_names)
-pod_names = [[pod for pod in pod_names if re.match(r""+str(workflow)+"-[a-zA-Z0-9-]+$", pod)]]
+pod_names = [pod for pod in pod_names if re.match(r"^"+str(workflow)+"-[.]*", pod)]
 print(pod_names)
 for pod_name in pod_names:
     try:
