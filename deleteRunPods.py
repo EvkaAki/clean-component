@@ -16,7 +16,7 @@ workflow = args
 pods = v1.list_namespaced_pod(current_namespace).items
 pod_names = []
 for pod in pods:
-    pod_names.append(pod.getMetadata().getName())
+    pod_names.append(pod.name)
 print(pod_names)
 # r = re.compile(".*"+workflow)
 # pods = list(filter(r.match, pods))
