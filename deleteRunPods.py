@@ -10,11 +10,11 @@ config.load_incluster_config()
 v1 = client.CoreV1Api()
 current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 parser = argparse.ArgumentParser(description='Find and delete run pods.')
-parser.add_argument('workflow', type=str,
+parser.add_argument('--workflow', type=str,
   help='Path of the local file containing the Workflow name.')
 args = parser.parse_args()
 workflow = args.workflow
-
+print(args.workflow)
 try:
     pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
 except ApiException as e:
