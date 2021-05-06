@@ -21,9 +21,6 @@ try:
 except ApiException as e:
     print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
 
-# pod_names = []
-# for pod in pods.items:
-#     pod_names.append(pod.metadata.name)
 pod_names = [pod.metadata.name for pod in pods.items]
 
 pod_names = [pod for pod in pod_names if re.match(r"^"+str(workflow)+"-[.]*", pod)]
