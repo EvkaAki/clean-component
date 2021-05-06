@@ -3,7 +3,7 @@ name: Push Pipelines image to DockerHub
 on:
   push:
     branches:
-      - 'main'
+      - 'master'
 
 jobs:
   docker:
