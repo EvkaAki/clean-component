@@ -14,6 +14,7 @@ print(args)
 
 workflow = args
 pods = v1.list_namespaced_pod(current_namespace).items
+pod_names = []
 for pod in pods:
     pod_names.append(pod.metadata.name)
 
