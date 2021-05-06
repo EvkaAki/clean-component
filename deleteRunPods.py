@@ -16,9 +16,7 @@ workflow = args
 pods = v1.list_namespaced_pod(current_namespace).items
 for pod in pods:
     pod_names.append(pod.metadata.name)
-print(pod_names)
-r = re.compile(".*"+workflow)
-pods = list(filter(r.match, pods))
+
 pod_names = [[pod for pod in pods if re.match(r"+workflow_name+", pod)]]
 for pod_name in pod_names:
     try:
