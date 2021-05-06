@@ -8,6 +8,7 @@ current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespac
 parser = argparse.ArgumentParser(description='Find and delete run pods.')
 parser.add_argument('--workflow', type=str,
   help='Path of the local file containing the Workflow name.')
+args = parser.parse_args()
 
 workflow_name = args.workflow
 pods = v1.list_namespaced_pod(current_namespace).items
