@@ -12,6 +12,5 @@ implementation:
     command: [
         python3,
         /app/deleteRunPods.py,
-        --workflow,
-        { inputValue: workflow },
+        inputValue: workflow_name,
     ]
