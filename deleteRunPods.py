@@ -14,7 +14,6 @@ workflow = args
 
 try:
     pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
-    print(api_response)
 except ApiException as e:
     print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
 
