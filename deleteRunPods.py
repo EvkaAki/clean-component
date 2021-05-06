@@ -13,10 +13,13 @@ args = parser.parse_args()
 
 workflow = args.workflow_name
 pods = v1.list_namespaced_pod(current_namespace).items
-print(str(args)
 print(workflow)
-r = re.compile(".*"+workflow)
-pods = list(filter(r.match, pods))
+pod_names = []
+for pod in pods:
+    pod_names.append(pod.getMetadata().getName())
+print(pod_names)
+# r = re.compile(".*"+workflow)
+# pods = list(filter(r.match, pods))
 
 # ret = v1.list_pod_for_all_namespaces(watch=False)
 # try:
