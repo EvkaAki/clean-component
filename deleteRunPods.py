@@ -10,10 +10,10 @@ parser = argparse.ArgumentParser(description='Find and delete run pods.')
 parser.add_argument('--workflow', type=str,
   help='Path of the local file containing the Workflow name.')
 args = parser.parse_args()
+print(args)
 
-workflow = args.workflow_name
+workflow = args
 pods = v1.list_namespaced_pod(current_namespace).items
-print(workflow)
 pod_names = []
 for pod in pods:
     pod_names.append(pod.getMetadata().getName())
