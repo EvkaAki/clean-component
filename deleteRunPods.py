@@ -12,11 +12,11 @@ def main():
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 
-    minio_client = Minio(
+    minio_client = Minio (
         "minio-service.kubeflow.svc.cluster.local:9000",
         access_key = 'minio',
-        secret_key = 'minio123'),
-        secure=False
+        secret_key = 'minio123',
+        secure = False
     )
 
     buckets = minio_client.list_buckets()
