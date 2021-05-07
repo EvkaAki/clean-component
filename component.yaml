@@ -8,13 +8,10 @@ inputs:
   - {name: pod path, type: String, description: 'Workflow name used to match pods to delete.'}
 implementation:
   container:
-    # The strict name of a container image that you've pushed to a container registry.
     image: endocker299/clean-pods:latest
     command: [
         python3,
         /app/deleteRunPods.py,
-        --workflow,
-        inputValue: workflow,
         --pod-path,
         inputValue: pod path,
     ]

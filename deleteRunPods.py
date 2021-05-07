@@ -4,6 +4,7 @@ from minio import Minio
 from minio.error import S3Error
 import os
 import urllib3
+import rsplit
 import argparse
 import re
 
@@ -16,18 +17,17 @@ def main():
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+    pod_name = args.pod_path
 
     parser = argparse.ArgumentParser(description='Find and delete run pods.')
-    parser.add_argument('--workflow', type=str,
-      help='Path of the local file containing the Workflow name.')
+
     parser.add_argument('--pod-path', type=str,
       help='Path of the local file containing the Pod name.')
     args = parser.parse_args()
-    workflow = args.workflow
+    workflow = pod_name.rsplit('-', 1)[0]
 
     print("Workflow name: "+ str(workflow))
 
-    pod_name = args.pod_path
     print("Pod name: "+ str(pod_name))
 
     minio_client = Minio (
@@ -38,12 +38,12 @@ def main():
     )
 
     buckets = minio_client.list_buckets()
-#     for bucket in buckets:
-#         print(bucket.name, bucket.creation_date)
-    objects = minio_client.list_objects('artifacts', recursive=True,start_after=None, include_user_meta=True)
-    object_names = []
-    for obj in objects:
-        object_names.append(obj._object_name)
+    for bucket in buckets:
+        print(bucket.name, bucket.creation_date)
+        objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
+        object_names = []
+        for obj in objects:
+            object_names.append(obj._object_name)
 
     object_names = [obj for obj in object_names if re.match(r"[.]*"+str(pod_name)+"[.]*", obj)]
 #     minio_client.remove_object(bucket.name, obj._object_name)
