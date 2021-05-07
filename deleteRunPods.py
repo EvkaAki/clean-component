@@ -40,9 +40,10 @@ def main():
     buckets = minio_client.list_buckets()
     for bucket in buckets:
         print(bucket.name, bucket.creation_date)
+        minio_client.remove_object(bucket.name, pod_name)
         objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
         for obj in objects:
-            dump(obj.name)
+            dump(obj)
 
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
