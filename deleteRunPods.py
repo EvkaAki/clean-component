@@ -23,7 +23,6 @@ def main():
     print("Workflow name: "+ str(workflow))
 
     pod_path = args.pod_path
-    pod_name = open(pod_path).read()
     print("Pod name: "+ str(pod_name))
 
     minio_client = Minio (
