@@ -1,34 +1,53 @@
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
+from minio import Minio
+from minio.error import S3Error
+import os
+import urllib3
 import argparse
 import re
 
+def main()
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+    current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 
-config.load_incluster_config()
-v1 = client.CoreV1Api()
-current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+    client = Minio(
+        "192.168.72.135:9000",
+        access_key = os.getenv('MINIO_ACCESS_KEY', 'minio'),
+        secret_key = os.getenv('MINIO_SECRET_KEY', 'minio123'),
+    )
 
-parser = argparse.ArgumentParser(description='Find and delete run pods.')
-parser.add_argument('--workflow', type=str,
-  help='Path of the local file containing the Workflow name.')
-args = parser.parse_args()
-workflow = args.workflow
+    buckets = client.list_buckets()
+    for bucket in buckets:
+        print(bucket.name, bucket.creation_date)
 
-print("Workflow name: "+ str(workflow))
+    parser = argparse.ArgumentParser(description='Find and delete run pods.')
+    parser.add_argument('--workflow', type=str,
+      help='Path of the local file containing the Workflow name.')
+    args = parser.parse_args()
+    workflow = args.workflow
 
-try:
-    pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
-except ApiException as e:
-    print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+    print("Workflow name: "+ str(workflow))
 
-pod_names = [pod.metadata.name for pod in pods.items]
-
-pod_names = [pod for pod in pod_names if re.match(r"^"+str(workflow)+"-[.]*", pod)]
-print("Pods to be removed: "+str(pod_names)[1:-1] )
-for pod_name in pod_names:
     try:
-        api_response = v1.delete_namespaced_pod(pod_name, current_namespace)
-        print(api_response)
+        pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
     except ApiException as e:
-        print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
+        print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
 
+    pod_names = [pod.metadata.name for pod in pods.items]
+
+    pod_names = [pod for pod in pod_names if re.match(r"^"+str(workflow)+"-[.]*", pod)]
+    print("Pods to be removed: "+str(pod_names)[1:-1] )
+    for pod_name in pod_names:
+        try:
+            api_response = v1.delete_namespaced_pod(pod_name, current_namespace)
+            print(api_response)
+        except ApiException as e:
+            print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except S3Error as exc:
+        print("error occurred.", exc)
