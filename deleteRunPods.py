@@ -16,7 +16,7 @@ def main():
     parser.add_argument('--workflow', type=str,
       help='Path of the local file containing the Workflow name.')
     parser.add_argument('--pod-path', type=str,
-      help='Path of the local file containing the Workflow name.')
+      help='Path of the local file containing the Pod name.')
     args = parser.parse_args()
     workflow = args.workflow
 

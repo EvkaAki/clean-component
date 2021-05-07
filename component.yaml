@@ -14,7 +14,7 @@ implementation:
         python3,
         /app/deleteRunPods.py,
         --workflow,
-        inputValue: workflow
+        inputValue: workflow,
         --pod-path,
-        inputValue: pod path
+        inputValue: pod path,
     ]
