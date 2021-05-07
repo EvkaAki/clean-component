@@ -44,6 +44,7 @@ def main():
         objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
         for obj in objects:
             dump(obj)
+            print(obj._object_name)
 
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
