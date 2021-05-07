@@ -38,14 +38,17 @@ def main():
     )
 
     buckets = minio_client.list_buckets()
-    for bucket in buckets:
-        print(bucket.name, bucket.creation_date)
-        minio_client.remove_object(bucket.name, pod_name)
-        objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
-        for obj in objects:
-            dump(obj)
-            print(obj._object_name)
+#     for bucket in buckets:
+#         print(bucket.name, bucket.creation_date)
+    objects = minio_client.list_objects('artifacts', recursive=True,start_after=None, include_user_meta=True)
+    object_names = []
+    for obj in objects:
+        object_names.append(obj._object_name)
 
+    object_names = [obj for obj in object_names if re.match(r"[.]*"+str(pod_name)+"[.]*", obj)]
+#     minio_client.remove_object(bucket.name, obj._object_name)
+    print("stop")
+    print(object_names)
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
     except ApiException as e:
