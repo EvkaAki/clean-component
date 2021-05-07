@@ -13,7 +13,7 @@ def main():
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 
     minio_client = Minio(
-        "192.168.72.135:9000",
+        "mongodb://mlpipeline",
         access_key = os.getenv('MINIO_ACCESS_KEY', 'minio'),
         secret_key = os.getenv('MINIO_SECRET_KEY', 'minio123'),
     )
