@@ -22,9 +22,9 @@ def main():
     buckets = minio_client.list_buckets()
     for bucket in buckets:
         print(bucket.name, bucket.creation_date)
-        objects = minio_client.list_objects(bucket.name, recursive=True)
+        objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
         for obj in objects:
-            print(obj)
+            print(obj.name)
 
     parser = argparse.ArgumentParser(description='Find and delete run pods.')
     parser.add_argument('--workflow', type=str,
