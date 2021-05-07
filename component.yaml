@@ -5,6 +5,7 @@ metadata:
     author: Eva Nedeliaková <evanedeliakova@gmail.com>
 inputs:
   - {name: workflow, type: String, description: 'Workflow name used to match pods to delete.'}
+  - {name: pod path, type: String, description: 'Workflow name used to match pods to delete.'}
 implementation:
   container:
     # The strict name of a container image that you've pushed to a container registry.
@@ -14,4 +15,6 @@ implementation:
         /app/deleteRunPods.py,
         --workflow,
         inputValue: workflow
+        --pod-path,
+        inputValue: pod path
     ]

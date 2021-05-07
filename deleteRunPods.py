@@ -12,6 +12,20 @@ def main():
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 
+    parser = argparse.ArgumentParser(description='Find and delete run pods.')
+    parser.add_argument('--workflow', type=str,
+      help='Path of the local file containing the Workflow name.')
+    parser.add_argument('--pod-path', type=str,
+      help='Path of the local file containing the Workflow name.')
+    args = parser.parse_args()
+    workflow = args.workflow
+
+    print("Workflow name: "+ str(workflow))
+
+    pod_path = args.pod_path
+    pod_name = open(pod_path).read()
+    print("Pod name: "+ str(pod_name))
+
     minio_client = Minio (
         "minio-service.kubeflow.svc.cluster.local:9000",
         access_key = 'minio',
@@ -25,14 +39,6 @@ def main():
         objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
         for obj in objects:
             print(obj.name)
-
-    parser = argparse.ArgumentParser(description='Find and delete run pods.')
-    parser.add_argument('--workflow', type=str,
-      help='Path of the local file containing the Workflow name.')
-    args = parser.parse_args()
-    workflow = args.workflow
-
-    print("Workflow name: "+ str(workflow))
 
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
