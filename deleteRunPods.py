@@ -27,7 +27,6 @@ def main():
     workflow = pod_name.rsplit('-', 1)[0]
 
     print("Workflow name: "+ str(workflow))
-
     print("Pod name: "+ str(pod_name))
 
     minio_client = Minio (
