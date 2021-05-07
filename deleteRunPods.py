@@ -7,6 +7,11 @@ import urllib3
 import argparse
 import re
 
+def dump(obj):
+   for attr in dir(obj):
+       if hasattr( obj, attr ):
+           print( "obj.%s = %s" % (attr, getattr(obj, attr)))
+
 def main():
     config.load_incluster_config()
     v1 = client.CoreV1Api()
@@ -37,7 +42,7 @@ def main():
         print(bucket.name, bucket.creation_date)
         objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
         for obj in objects:
-            print(obj.name)
+            dump(obj.name)
 
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
