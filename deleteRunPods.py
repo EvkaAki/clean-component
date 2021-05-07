@@ -12,13 +12,13 @@ def main():
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 
-    client = Minio(
+    minio_client = Minio(
         "192.168.72.135:9000",
         access_key = os.getenv('MINIO_ACCESS_KEY', 'minio'),
         secret_key = os.getenv('MINIO_SECRET_KEY', 'minio123'),
     )
 
-    buckets = client.list_buckets()
+    buckets = minio_client.list_buckets()
     for bucket in buckets:
         print(bucket.name, bucket.creation_date)
 
