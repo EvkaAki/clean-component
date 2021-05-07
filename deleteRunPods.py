@@ -7,7 +7,7 @@ import urllib3
 import argparse
 import re
 
-def main()
+def main():
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
