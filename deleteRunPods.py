@@ -4,7 +4,7 @@ from minio import Minio
 from minio.error import S3Error
 import os
 import urllib3
-import rsplit
+import split
 import argparse
 import re
 
