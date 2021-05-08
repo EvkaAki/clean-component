@@ -6,7 +6,6 @@ import os
 import urllib3
 import split
 import argparse
-import json
 import re
 
 def dump(obj):
@@ -60,8 +59,7 @@ def main():
     for pod_name in pod_names:
         try:
             api_response = v1.delete_namespaced_pod(pod_name, current_namespace)
-            pod_info = json.loads(api_response)
-            print("%s\t%s\t%s" % (pod_info.status.pod_ip, pod_info.metadata.namespace, pod_info.metadata.name))
+            dump(api_response)
         except ApiException as e:
             print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
 
