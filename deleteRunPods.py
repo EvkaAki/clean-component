@@ -42,8 +42,8 @@ def main():
         object_names = []
         for obj in objects:
             object_names.append(obj._object_name)
-
-    object_names = [obj._object_name for obj in object_names if re.match(r"[.]*"+str(pod_name)+"[.]*", obj)]
+    print(object_names)
+    object_names = [obj for obj in object_names if re.match(r"[.]*"+str(pod_name)+"[.]*", obj)]
 #     minio_client.remove_object(bucket.name, obj._object_name)
     print("stop")
     print(object_names)
