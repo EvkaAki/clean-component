@@ -42,7 +42,7 @@ def main():
         object_names = []
         for obj in objects:
             object_names.append(obj._object_name)
-    print(object_names)
+
     object_names = [obj for obj in object_names if re.match(r"[\w///-]*"+str(pod_name)+"[.]*", obj)]
 
 #     minio_client.remove_object(bucket.name, obj._object_name)
@@ -60,7 +60,7 @@ def main():
     for pod_name in pod_names:
         try:
             api_response = v1.delete_namespaced_pod(pod_name, current_namespace)
-            dump(api_response)
+            dump(api_response.status)
         except ApiException as e:
             print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
 
