@@ -37,13 +37,13 @@ def main():
 
     buckets = minio_client.list_buckets()
     for bucket in buckets:
-        print(bucket.name, bucket.creation_date)
+        print('Bucket name: ',bucket.name, bucket.creation_date)
         objects = minio_client.list_objects(bucket.name, recursive=True,start_after=None, include_user_meta=True)
         object_names = []
         for obj in objects:
             object_names.append(obj._object_name)
 
-    object_names = [obj for obj in object_names if re.match(r"[.]*"+str(pod_name)+"[.]*", obj)]
+    object_names = [obj._object_name for obj in object_names if re.match(r"[.]*"+str(pod_name)+"[.]*", obj)]
 #     minio_client.remove_object(bucket.name, obj._object_name)
     print("stop")
     print(object_names)
@@ -59,7 +59,7 @@ def main():
     for pod_name in pod_names:
         try:
             api_response = v1.delete_namespaced_pod(pod_name, current_namespace)
-            print(api_response)
+            print("%s\t%s\t%s" % (api_response.status.pod_ip, api_response.metadata.namespace, api_response.metadata.name))
         except ApiException as e:
             print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
 
