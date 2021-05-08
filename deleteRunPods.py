@@ -9,7 +9,7 @@ import argparse
 import re
 
 
-def delete_artefacts(pod_name):
+def delete_artifacts(pod_name):
     minio_client = Minio(
         "minio-service.kubeflow.svc.cluster.local:9000",
         access_key='minio',
@@ -29,7 +29,7 @@ def delete_artefacts(pod_name):
 
                 try:
                     print("Artefact to delete: " + str(obj._object_name) + " in bucket: "+ str(bucket.name))
-                    # minio_client.remove_object(str(bucket.name), str(obj._object_name))
+                    minio_client.remove_object(str(bucket.name), str(obj._object_name))
                 except S3Error as exc:
                     print("error occurred while deleting artefact.", exc)
 
@@ -67,8 +67,8 @@ def main():
     args = parser.parse_args()
     pod_name = args.pod_path
 
-    # delete artefact for download pod therefore delete dataset
-    delete_artefacts(pod_name)
+    # delete artifact for download pod therefore delete dataset
+    delete_artifacts(pod_name)
     # delete all pods used in experiment before
     delete_pods(pod_name)
 
