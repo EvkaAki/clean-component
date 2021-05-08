@@ -26,9 +26,9 @@ def delete_artefacts(pod_name):
 
         for obj in objects:
             if re.match(r"[\w///-]*" + str(obj._object_name) + "[.]*", str(obj._object_name)):
-                print("Deleting artefact: " + str(pod_name) + " in bucket: "+ str(bucket.name))
+                print("Deleting artefact: " + str(obj._object_name) + " in bucket: "+ str(bucket.name))
                 try:
-                    minio_client.remove_object(str(bucket.name), str(obj._object_name))
+#                     minio_client.remove_object(str(bucket.name), str(obj._object_name))
                 except S3Error as exc:
                     print("error occurred while deleting artefact.", exc)
 
