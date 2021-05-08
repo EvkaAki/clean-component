@@ -43,10 +43,11 @@ def main():
         for obj in objects:
             object_names.append(obj._object_name)
     print(object_names)
-    object_names = [obj for obj in object_names if re.match(r"[.]*"+str(pod_name)+"[.]*", obj)]
+    object_names = [obj for obj in object_names if re.match(r"artifacts\/[\w///-]*"+str(pod_name)+"[.]*", obj)]
+
 #     minio_client.remove_object(bucket.name, obj._object_name)
-    print("stop")
-    print(object_names)
+    print("Artefacts to be deleted: " +str(object_names)[1:-1])
+
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace, label_selector="workflows.argoproj.io/completed=true")
     except ApiException as e:
