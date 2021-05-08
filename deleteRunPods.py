@@ -17,13 +17,12 @@ def main():
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
-    pod_name = args.pod_path
 
     parser = argparse.ArgumentParser(description='Find and delete run pods.')
-
     parser.add_argument('--pod-path', type=str,
       help='Path of the local file containing the Pod name.')
     args = parser.parse_args()
+    pod_name = args.pod_path
     workflow = pod_name.rsplit('-', 1)[0]
 
     print("Workflow name: "+ str(workflow))
