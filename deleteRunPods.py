@@ -50,8 +50,7 @@ def delete_pods(pod_name):
     except ApiException as e:
         print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
 
-    pod_names = [pod.metadata.name for pod in pods.items]
-    pod_names = [pod for pod in pod_names if re.match(r"^"+str(workflow)+"-[.]*", pod)]
+    pod_names = [pod.metadata.name for pod in pods.items if re.match(r"^"+str(workflow)+"-[.]*", pod.metadata.name)]
 
     print("Pods to be removed: "+str(pod_names)[1:-1] )
     for pod_name in pod_names:
