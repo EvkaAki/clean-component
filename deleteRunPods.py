@@ -35,12 +35,12 @@ def delete_artefacts(pod_name):
 
 def delete_pods(pod_name):
     workflow = pod_name.rsplit('-', 1)[0]
-
-    print("Workflow name: " + str(workflow))
-    print("Pod name: " + str(pod_name))
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+
+    print("Workflow name: " + str(workflow))
+    print("Pod name: " + str(pod_name))
 
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace,
