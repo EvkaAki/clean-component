@@ -62,7 +62,7 @@ def main():
         try:
             api_response = v1.delete_namespaced_pod(pod_name, current_namespace)
             status = json.loads(api_response.status)
-            print(status.)
+            print(status)
         except ApiException as e:
             print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
 
