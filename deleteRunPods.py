@@ -6,7 +6,6 @@ import os
 import urllib3
 import split
 import argparse
-import json
 import re
 
 
