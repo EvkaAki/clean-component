@@ -20,7 +20,6 @@ def delete_artifacts(pod_name):
     buckets = minio_client.list_buckets()
     object_names = []
 
-
     for bucket in buckets:
         objects = minio_client.list_objects(bucket.name, recursive=True, start_after=None, include_user_meta=True)
 
@@ -55,7 +54,7 @@ def delete_pods(pod_name):
     for pod_name in pod_names:
         try:
             api_response = v1.delete_namespaced_pod(pod_name, current_namespace)
-            print('Pod: ' +pod_name + ' removed.')
+            print('Pod: ' + pod_name + ' removed.')
         except ApiException as e:
             print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
 
