@@ -1,5 +1,5 @@
 name: Clear pods
-description: Clear pods used to run the containers in pipeline run
+description: Clear pods used to run previous steps in a pipeline run according to workflow name
 metadata:
   annotations:
     author: Eva Nedeliaková <evanedeliakova@gmail.com>
