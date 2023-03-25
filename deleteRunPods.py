@@ -13,7 +13,7 @@ def delete_artifacts(pod_name):
     minio_client = Minio(
         "minio-service.kubeflow.svc.cluster.local:9000",
         access_key='minio',
-        secret_key='minio123',
+        secret_key='H5MQWLCSVTOHZ20EQU920IEATPIDG9',
         secure=False
     )
 
