@@ -12,9 +12,9 @@ clean_data_op = kfp.components.load_component_from_url(
     )
 
 
-sign_data_op = kfp.components.load_component_from_url(
-    'https://raw.githubusercontent.com/EvkaAki/sign-artefact/master/component.yaml'
-    )
+# sign_data_op = kfp.components.load_component_from_url(
+#     'https://raw.githubusercontent.com/EvkaAki/sign-artefact/master/component.yaml'
+#     )
 
 secret_env = V1EnvVar(
     name='PRIVATE_KEY',
@@ -42,11 +42,9 @@ def print_csv(data_path: InputPath(), model_path: OutputPath()):
 @dsl.pipeline(name='clean_experiment')
 def pipeline(url: str):
     data_job = web_downloader_op(url=url)
-
     print_csv_task = print_csv(data_path=data_job.outputs['data_path'])
-#     sign_task = sign_data_op(artefact_name=str(print_csv_task.outputs['model_path'])).after(print_csv_task)
-    # sign_task.container.add_env_variable(secret_env)
-    clean_data_op(pod_path=data_job.outputs['pod_path']).after(print_csv_task)
+#     sign_task = sign_data_op(artefact_name=print_csv_task.outputs['model_path']).after(print_csv_task)
+    clean_data_op(pod_path = data_job.outputs['pod_path']).after(print_csv_task)
 
 
 if __name__ == '__main__':

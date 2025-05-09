@@ -4,7 +4,7 @@ metadata:
   annotations:
     author: Eva Nedeliaková <evanedeliakova@gmail.com>
 inputs:
-  - {name: pod path, type: string, description: 'Pod name used to match other pods to delete and delete artifact.'}
+  - {name: pod path, type: Artifact, description: 'Pod name used to match other pods to delete and delete artifact.'}
 implementation:
   container:
     image: endocker299/clean-pods:latest
