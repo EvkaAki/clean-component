@@ -7,6 +7,7 @@ import urllib3
 import split
 import argparse
 import re
+import socket
 
 
 def delete_artifacts(pod_name):
@@ -45,6 +46,22 @@ def delete_pods(pod_name):
 
     print("Workflow name: " + str(workflow))
     print("Pod name: " + str(pod_name))
+
+    assert os.path.exists("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"), "CA cert missing"
+    with open("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt") as f:
+        print("CA cert preview:", f.read(100))
+
+    try:
+        print("DNS resolution:", socket.gethostbyname("kubernetes.default.svc"))
+    except Exception as e:
+        print("DNS resolution failed:", e)
+
+    configuration = client.Configuration()
+    config.load_incluster_config(client_configuration=configuration)
+
+    print("Loaded cert:", configuration.ssl_ca_cert)
+    print("API server:", configuration.host)
+
 
     try:
         pods = v1.list_namespaced_pod(namespace=current_namespace,
