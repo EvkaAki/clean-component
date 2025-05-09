@@ -12,5 +12,5 @@ implementation:
         python3,
         /app/deleteRunPods.py,
         --pod-path,
-        {inputPath: pod path},
+        - {inputPath: pod path},
     ]
