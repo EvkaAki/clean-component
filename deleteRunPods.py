@@ -47,6 +47,7 @@ def delete_pods(pod_name):
 
     istio_ca = "/etc/certs/root-cert.pem"
     k8s_ca = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    print("Are you even here?")
     if os.path.exists(istio_ca):
         print("Using Istio CA at", istio_ca)
         configuration.ssl_ca_cert = istio_ca
