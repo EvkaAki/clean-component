@@ -45,13 +45,16 @@ def delete_pods(pod_name):
     configuration = client.Configuration()
     config.load_incluster_config(client_configuration=configuration)
 
-    # Override SSL context to ignore key usage restrictions
-    context = ssl.create_default_context(cafile=configuration.ssl_ca_cert)
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_REQUIRED
+    istio_ca = "/etc/certs/root-cert.pem"
+    k8s_ca = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    if os.path.exists(istio_ca):
+        print("Using Istio CA at", istio_ca)
+        configuration.ssl_ca_cert = istio_ca
+    else:
+        print("Using Kubernetes default CA at", k8s_ca)
+        configuration.ssl_ca_cert = k8s_ca
 
-    # Override cert validation workaround
-    urllib3_ssl.ssl_wrap_socket = lambda *args, **kwargs: context.wrap_socket(*args, **kwargs)
+    configuration.verify_ssl = True
 
     v1 = client.CoreV1Api(client.ApiClient(configuration))
 
