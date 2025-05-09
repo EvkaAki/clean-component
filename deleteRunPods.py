@@ -64,11 +64,13 @@ def delete_pods(pod_name):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Find and delete run pods.')
-    parser.add_argument('--pod-path', type=str,
-                        help='Path of the local file containing the Pod name.')
-    args = parser.parse_args()
-    pod_name = args.pod_path
+#     parser = argparse.ArgumentParser(description='Find and delete run pods.')
+#     parser.add_argument('--pod-path', type=str,
+#                         help='Path of the local file containing the Pod name.')
+#     args = parser.parse_args()
+#     pod_name = args.pod_path
+    with open(args.pod_path, 'r') as f:
+        pod_name = f.read().strip()
 
     # delete artifact for download pod therefore delete dataset
     delete_artifacts(pod_name)
