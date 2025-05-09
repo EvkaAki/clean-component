@@ -11,6 +11,62 @@ import ssl
 from urllib3.util import ssl_ as urllib3_ssl
 
 
+import base64
+import json
+import urllib3
+from kubernetes import client, config
+
+
+def get_api_server_ca_from_k8s():
+    # Use serviceaccount token to auth to /configz
+    token_path = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+    with open(token_path, "r") as f:
+        token = f.read()
+
+    http = urllib3.PoolManager()
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    try:
+        # This is available on all K8s clusters: gives API server config with the real CA
+        resp = http.request(
+            "GET",
+            "https://kubernetes.default.svc:443/configz",
+            headers=headers,
+            cert=None,
+            timeout=3.0,
+            retries=False,
+            preload_content=True
+        )
+    except urllib3.exceptions.SSLError as e:
+        raise RuntimeError("Cannot connect to API server, SSL issue: " + str(e))
+
+    if resp.status != 200:
+        raise RuntimeError("Cannot read /configz: " + resp.data.decode())
+
+    data = json.loads(resp.data.decode())
+    # CA cert is base64 encoded
+    ca_pem = base64.b64decode(data["config"]["authentication"]["x509"]["clientCAFile"])
+    return ca_pem
+
+
+# Now dynamically write the CA to a file and use it
+def load_verified_api():
+    ca_pem = get_api_server_ca_from_k8s()
+
+    ca_path = "/tmp/k8s-dynamic-ca.crt"
+    with open(ca_path, "wb") as f:
+        f.write(ca_pem)
+
+    configuration = client.Configuration()
+    config.load_incluster_config(client_configuration=configuration)
+    configuration.ssl_ca_cert = ca_path
+    configuration.verify_ssl = True
+
+    return client.CoreV1Api(client.ApiClient(configuration))
+
+
 def delete_artifacts(pod_name):
     print("Deleting artifacts")
 
@@ -22,7 +78,6 @@ def delete_artifacts(pod_name):
     )
 
     buckets = minio_client.list_buckets()
-    object_names = []
 
     for bucket in buckets:
         objects = minio_client.list_objects(bucket.name, recursive=True, start_after=None, include_user_meta=True)
@@ -42,22 +97,10 @@ def delete_pods(pod_name):
     print("Deleting pods")
     workflow = pod_name.rsplit('-', 1)[0]
 
-    configuration = client.Configuration()
-    config.load_incluster_config(client_configuration=configuration)
+    # configuration = client.Configuration()
+    # config.load_incluster_config(client_configuration=configuration)
 
-    istio_ca = "/etc/certs/root-cert.pem"
-    k8s_ca = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-    print("Are you even here?")
-    if os.path.exists(istio_ca):
-        print("Using Istio CA at", istio_ca)
-        configuration.ssl_ca_cert = istio_ca
-    else:
-        print("Using Kubernetes default CA at", k8s_ca)
-        configuration.ssl_ca_cert = k8s_ca
-
-    configuration.verify_ssl = True
-
-    v1 = client.CoreV1Api(client.ApiClient(configuration))
+    v1 = load_verified_api()
 
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
 
@@ -86,7 +129,6 @@ def main():
     parser.add_argument('--pod-path', type=str,
                         help='Path of the local file containing the Pod name.')
     args = parser.parse_args()
-#     pod_name = args.pod_path
     with open(args.pod_path, 'r') as f:
         pod_name = f.read().strip()
 
