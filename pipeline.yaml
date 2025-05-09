@@ -27,8 +27,8 @@ components:
           artifactType:
             schemaTitle: system.Artifact
             schemaVersion: 0.0.1
-  comp-print-csv:
-    executorLabel: exec-print-csv
+  comp-mock-model:
+    executorLabel: exec-mock-model
     inputDefinitions:
       artifacts:
         data_path:
@@ -38,6 +38,14 @@ components:
     outputDefinitions:
       artifacts:
         model_path:
+          artifactType:
+            schemaTitle: system.Artifact
+            schemaVersion: 0.0.1
+  comp-sign-artefact:
+    executorLabel: exec-sign-artefact
+    inputDefinitions:
+      artifacts:
+        artefact_path:
           artifactType:
             schemaTitle: system.Artifact
             schemaVersion: 0.0.1
@@ -65,13 +73,13 @@ deploymentSpec:
         - python3
         - /app/downloadData.py
         image: endocker299/download-data:latest
-    exec-print-csv:
+    exec-mock-model:
       container:
         args:
         - --executor_input
         - '{{$}}'
         - --function_to_execute
-        - print_csv
+        - mock_model
         command:
         - sh
         - -c
@@ -92,12 +100,20 @@ deploymentSpec:
 
           '
         - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
-          \ *\n\ndef print_csv(data_path: InputPath(), model_path: OutputPath()):\n\
-          \    import pandas as pd\n    df = pd.read_csv(data_path)\n    index = df.index\n\
-          \    number_of_rows = len(index)\n    f = open(model_path, \"w\")\n    f.write('Number\
-          \ of lines in dataset: ' + str(number_of_rows))\n    f.close()\n    print(df.head(3))\n\
-          \n"
+          \ *\n\ndef mock_model(data_path: InputPath(), model_path: OutputPath()):\n\
+          \    import pandas as pd\n    import pickle\n\n    df = pd.read_csv(data_path)\n\
+          \    with open(model_path, 'wb') as f:\n        pickle.dump(df, f)\n   \
+          \ f.close()\n    print(df.head(3))\n\n"
         image: python:3.10
+    exec-sign-artefact:
+      container:
+        args:
+        - --artefact-path
+        - '{{$.inputs.artifacts[''artefact_path''].path}}'
+        command:
+        - python3
+        - /app/sign.py
+        image: endocker299/sign-artefact:latest
 pipelineInfo:
   name: clean-experiment
 root:
@@ -110,7 +126,7 @@ root:
           name: comp-clear-pods
         dependentTasks:
         - download-data-and-output-pod-name
-        - print-csv
+        - sign-artefact
         inputs:
           artifacts:
             pod_path:
@@ -130,11 +146,11 @@ root:
               componentInputParameter: url
         taskInfo:
           name: download-data-and-output-pod-name
-      print-csv:
+      mock-model:
         cachingOptions:
           enableCache: true
         componentRef:
-          name: comp-print-csv
+          name: comp-mock-model
         dependentTasks:
         - download-data-and-output-pod-name
         inputs:
@@ -144,7 +160,23 @@ root:
                 outputArtifactKey: data_path
                 producerTask: download-data-and-output-pod-name
         taskInfo:
-          name: print-csv
+          name: mock-model
+      sign-artefact:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-sign-artefact
+        dependentTasks:
+        - download-data-and-output-pod-name
+        - mock-model
+        inputs:
+          artifacts:
+            artefact_path:
+              taskOutputArtifact:
+                outputArtifactKey: model_path
+                producerTask: mock-model
+        taskInfo:
+          name: sign-artefact
   inputDefinitions:
     parameters:
       url:
