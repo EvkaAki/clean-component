@@ -16,57 +16,6 @@ import json
 import urllib3
 from kubernetes import client, config
 
-
-def get_api_server_ca_from_k8s():
-    # Use serviceaccount token to auth to /configz
-    token_path = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-    with open(token_path, "r") as f:
-        token = f.read()
-
-    http = urllib3.PoolManager()
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
-
-    try:
-        # This is available on all K8s clusters: gives API server config with the real CA
-        resp = http.request(
-            "GET",
-            "https://kubernetes.default.svc:443/configz",
-            headers=headers,
-            cert=None,
-            timeout=3.0,
-            retries=False,
-            preload_content=True
-        )
-    except urllib3.exceptions.SSLError as e:
-        raise RuntimeError("Cannot connect to API server, SSL issue: " + str(e))
-
-    if resp.status != 200:
-        raise RuntimeError("Cannot read /configz: " + resp.data.decode())
-
-    data = json.loads(resp.data.decode())
-    # CA cert is base64 encoded
-    ca_pem = base64.b64decode(data["config"]["authentication"]["x509"]["clientCAFile"])
-    return ca_pem
-
-
-# Now dynamically write the CA to a file and use it
-def load_verified_api():
-    ca_pem = get_api_server_ca_from_k8s()
-
-    ca_path = "/tmp/k8s-dynamic-ca.crt"
-    with open(ca_path, "wb") as f:
-        f.write(ca_pem)
-
-    configuration = client.Configuration()
-    config.load_incluster_config(client_configuration=configuration)
-    configuration.ssl_ca_cert = ca_path
-    configuration.verify_ssl = True
-
-    return client.CoreV1Api(client.ApiClient(configuration))
-
-
 def delete_artifacts(pod_name):
     print("Deleting artifacts")
 
