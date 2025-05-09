@@ -39,7 +39,6 @@ def delete_artifacts(pod_name):
 def delete_pods(pod_name):
     print("Deleting pods")
     workflow = pod_name.rsplit('-', 1)[0]
-    print("Workflow" + workflow)
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
