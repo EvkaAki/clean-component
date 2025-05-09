@@ -10,6 +10,10 @@ import re
 
 
 def delete_artifacts(pod_name):
+    print("Deleting artifacts")
+    print("ENV:", os.environ)
+    print("Mounted files:", os.listdir("/var/run/secrets/kubernetes.io/serviceaccount"))
+
     minio_client = Minio(
         "minio.kubeflow.svc.cluster.local:9000",
         access_key='minio',
@@ -34,6 +38,7 @@ def delete_artifacts(pod_name):
 
 
 def delete_pods(pod_name):
+    print("Deleting pods")
     workflow = pod_name.rsplit('-', 1)[0]
     config.load_incluster_config()
     v1 = client.CoreV1Api()
