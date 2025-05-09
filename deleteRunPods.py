@@ -11,8 +11,6 @@ import re
 
 def delete_artifacts(pod_name):
     print("Deleting artifacts")
-    print("ENV:", os.environ)
-    print("Mounted files:", os.listdir("/var/run/secrets/kubernetes.io/serviceaccount"))
 
     minio_client = Minio(
         "minio.kubeflow.svc.cluster.local:9000",
@@ -28,6 +26,7 @@ def delete_artifacts(pod_name):
         objects = minio_client.list_objects(bucket.name, recursive=True, start_after=None, include_user_meta=True)
 
         for obj in objects:
+        print("Matching object" + str(obj._object_name)
             if re.match(r"[\w///-]*" + str(pod_name) + "[.]*", str(obj._object_name)):
 
                 try:
@@ -40,6 +39,7 @@ def delete_artifacts(pod_name):
 def delete_pods(pod_name):
     print("Deleting pods")
     workflow = pod_name.rsplit('-', 1)[0]
+    print("Workflow" + workflow)
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
