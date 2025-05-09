@@ -34,7 +34,6 @@ def get_api_server_ca_from_k8s():
             "GET",
             "https://kubernetes.default.svc:443/configz",
             headers=headers,
-            cert=None,
             timeout=3.0,
             retries=False,
             preload_content=True
