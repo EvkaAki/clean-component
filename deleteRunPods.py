@@ -16,6 +16,7 @@ import json
 import urllib3
 from kubernetes import client, config
 
+
 def delete_artifacts(pod_name):
     print("Deleting artifacts")
 
