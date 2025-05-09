@@ -6,9 +6,11 @@ components:
   comp-clear-pods:
     executorLabel: exec-clear-pods
     inputDefinitions:
-      parameters:
+      artifacts:
         pod_path:
-          parameterType: STRING
+          artifactType:
+            schemaTitle: system.Artifact
+            schemaVersion: 0.0.1
   comp-download-data-and-output-pod-name:
     executorLabel: exec-download-data-and-output-pod-name
     inputDefinitions:
@@ -43,11 +45,12 @@ deploymentSpec:
   executors:
     exec-clear-pods:
       container:
+        args:
+        - --pod-path
+        - '{{$.inputs.artifacts[''pod_path''].path}}'
         command:
         - python3
         - /app/deleteRunPods.py
-        - --pod-path
-        - '{{$.inputs.parameters[''pod_path'']}}'
         image: endocker299/clean-pods:latest
     exec-download-data-and-output-pod-name:
       container:
@@ -106,12 +109,14 @@ root:
         componentRef:
           name: comp-clear-pods
         dependentTasks:
+        - download-data-and-output-pod-name
         - print-csv
         inputs:
-          parameters:
+          artifacts:
             pod_path:
-              runtimeValue:
-                constant: '{{channel:task=download-data-and-output-pod-name;name=pod_path;type=system.Artifact@0.0.1;}}'
+              taskOutputArtifact:
+                outputArtifactKey: pod_path
+                producerTask: download-data-and-output-pod-name
         taskInfo:
           name: clear-pods
       download-data-and-output-pod-name:
