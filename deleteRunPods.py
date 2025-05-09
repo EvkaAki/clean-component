@@ -26,7 +26,7 @@ def delete_artifacts(pod_name):
         objects = minio_client.list_objects(bucket.name, recursive=True, start_after=None, include_user_meta=True)
 
         for obj in objects:
-        print("Matching object" + str(obj._object_name)
+            print("Matching object" + str(obj._object_name)
             if re.match(r"[\w///-]*" + str(pod_name) + "[.]*", str(obj._object_name)):
 
                 try:
