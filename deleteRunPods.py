@@ -7,7 +7,7 @@ import urllib3
 import split
 import argparse
 import re
-import socket
+from urllib3.util import ssl_ as urllib3_ssl
 
 
 def delete_artifacts(pod_name):
@@ -40,14 +40,17 @@ def delete_artifacts(pod_name):
 def delete_pods(pod_name):
     print("Deleting pods")
     workflow = pod_name.rsplit('-', 1)[0]
-#     config.load_incluster_config()
-#     v1 = client.CoreV1Api()
+
     configuration = client.Configuration()
     config.load_incluster_config(client_configuration=configuration)
 
-    # Force using the in-cluster CA cert explicitly
-    configuration.ssl_ca_cert = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-    configuration.verify_ssl = True
+    # Override SSL context to ignore key usage restrictions
+    context = ssl.create_default_context(cafile=configuration.ssl_ca_cert)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_REQUIRED
+
+    # Override cert validation workaround
+    urllib3_ssl.ssl_wrap_socket = lambda *args, **kwargs: context.wrap_socket(*args, **kwargs)
 
     v1 = client.CoreV1Api(client.ApiClient(configuration))
 
