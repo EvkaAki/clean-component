@@ -15,14 +15,6 @@ sign_data_op = kfp.components.load_component_from_url(
     'https://raw.githubusercontent.com/EvkaAki/sign-artefact/master/component.yaml'
     )
 
-# secret_env = V1EnvVar(
-#     name='PRIVATE_KEY',
-#     value_from=V1SecretKeySelector(
-#         name='my-private-key',
-#         key='private_key.pem',
-#         optional=False
-#     )
-# )
 
 @component(
     base_image='python:3.10',  # Specify the base image
