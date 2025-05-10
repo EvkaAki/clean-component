@@ -167,7 +167,6 @@ root:
         componentRef:
           name: comp-sign-artefact
         dependentTasks:
-        - download-data-and-output-pod-name
         - mock-model
         inputs:
           artifacts:

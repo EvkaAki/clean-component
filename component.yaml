@@ -1,4 +1,4 @@
-name: Clear pods
+name: Clear data
 description: Clear pods used to run previous steps in a pipeline run according to workflow name
 metadata:
   annotations:

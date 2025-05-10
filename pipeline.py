@@ -43,7 +43,8 @@ def mock_model(data_path: InputPath(), model_path: OutputPath()):
 def pipeline(url: str):
     data_job = web_downloader_op(url=url)
     mock_model_task = mock_model(data_path=data_job.outputs['data_path'])
-    sign_task = sign_data_op(artefact_path=mock_model_task.outputs['model_path']).after(data_job)
+
+    sign_task = sign_data_op(artefact_path=mock_model_task.outputs['model_path']).after(mock_model_task)
     clean_data_op(pod_path = data_job.outputs['pod_path']).after(sign_task)
 
 
