@@ -3,8 +3,8 @@
 # Inputs:
 #    url: str
 components:
-  comp-clear-pods:
-    executorLabel: exec-clear-pods
+  comp-clear-data:
+    executorLabel: exec-clear-data
     inputDefinitions:
       artifacts:
         pod_path:
@@ -51,7 +51,7 @@ components:
             schemaVersion: 0.0.1
 deploymentSpec:
   executors:
-    exec-clear-pods:
+    exec-clear-data:
       container:
         args:
         - --pod-path
@@ -119,11 +119,11 @@ pipelineInfo:
 root:
   dag:
     tasks:
-      clear-pods:
+      clear-data:
         cachingOptions:
           enableCache: true
         componentRef:
-          name: comp-clear-pods
+          name: comp-clear-data
         dependentTasks:
         - download-data-and-output-pod-name
         - sign-artefact
@@ -134,7 +134,7 @@ root:
                 outputArtifactKey: pod_path
                 producerTask: download-data-and-output-pod-name
         taskInfo:
-          name: clear-pods
+          name: clear-data
       download-data-and-output-pod-name:
         cachingOptions:
           enableCache: true
