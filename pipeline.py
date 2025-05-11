@@ -33,21 +33,22 @@ def mock_model(data_path: InputPath(), model_path: OutputPath()):
     print(df.head(3))
 
 
-class MyOutputs(NamedTuple):
-    signed_output: Artifact
+# class MyOutputs(NamedTuple):
+#     signed_artefact_path: Artifact
 
 
 @dsl.pipeline(name='clean_experiment')
-def pipeline(url: str) -> MyOutputs:
+def pipeline(url: str):
+    # -> MyOutputs:
     data_job = web_downloader_op(url=url)
     mock_model_task = mock_model(data_path=data_job.outputs['data_path'])
 
     sign_task = sign_data_op(artefact_path=mock_model_task.outputs['model_path']).after(mock_model_task)
     clean_data_op(pod_path = data_job.outputs['pod_path']).after(sign_task)
 
-    return MyOutputs(
-        signed_output=sign_task.outputs["signed_artefact_path"]
-    )
+    # return MyOutputs(
+    #     signed_artefact_path=sign_task.outputs["signed_artefact_path"]
+    # )
 
 
 if __name__ == '__main__':

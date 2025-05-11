@@ -28,15 +28,15 @@ def delete_artifacts(pod_name):
     # for bucket in buckets:
     objects = minio_client.list_objects('mlpipeline', recursive=True, start_after=None, include_user_meta=True)
 
-    # for obj in objects:
-    #
-    #     if re.match(r"[\w///-]*" + str(pod_name) + "[.]*", str(obj._object_name)):
-    #
-    #         try:
-    #             print("Artefact to delete: " + str(obj._object_name) + " in bucket: "+ str('mlpipeline'))
-    #             minio_client.remove_object('mlpipeline', str(obj._object_name))
-    #         except S3Error as exc:
-    #             print("error occurred while deleting artefact.", exc)
+    for obj in objects:
+
+        if re.match(r"[\w///-]*" + str(pod_name) + "[.]*", str(obj._object_name)):
+
+            try:
+                print("Artefact to delete: " + str(obj._object_name) + " in bucket: "+ str('mlpipeline'))
+                minio_client.remove_object('mlpipeline', str(obj._object_name))
+            except S3Error as exc:
+                print("error occurred while deleting artefact.", exc)
 
 
 def delete_pods(pod_name):
