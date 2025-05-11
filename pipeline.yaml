@@ -2,6 +2,8 @@
 # Name: clean-experiment
 # Inputs:
 #    url: str
+# Outputs:
+#    signed_output: system.Artifact
 components:
   comp-clear-data:
     executorLabel: exec-clear-data
@@ -50,9 +52,11 @@ components:
             schemaTitle: system.Artifact
             schemaVersion: 0.0.1
     outputDefinitions:
-      parameters:
+      artifacts:
         signed_artefact_path:
-          parameterType: STRING
+          artifactType:
+            schemaTitle: system.Artifact
+            schemaVersion: 0.0.1
 deploymentSpec:
   executors:
     exec-clear-data:
@@ -115,7 +119,7 @@ deploymentSpec:
         - --artefact-path
         - '{{$.inputs.artifacts[''artefact_path''].path}}'
         - --signed-artefact-path
-        - '{{$.outputs.parameters[''signed_artefact_path''].output_file}}'
+        - '{{$.outputs.artifacts[''signed_artefact_path''].path}}'
         command:
         - python3
         - /app/sign.py
@@ -124,6 +128,12 @@ pipelineInfo:
   name: clean-experiment
 root:
   dag:
+    outputs:
+      artifacts:
+        signed_output:
+          artifactSelectors:
+          - outputArtifactKey: signed_artefact_path
+            producerSubtask: sign-artefact
     tasks:
       clear-data:
         cachingOptions:
@@ -186,5 +196,11 @@ root:
     parameters:
       url:
         parameterType: STRING
+  outputDefinitions:
+    artifacts:
+      signed_output:
+        artifactType:
+          schemaTitle: system.Artifact
+          schemaVersion: 0.0.1
 schemaVersion: 2.1.0
 sdkVersion: kfp-2.13.0

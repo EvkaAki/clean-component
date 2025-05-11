@@ -1,7 +1,9 @@
 import kfp
 from kfp import dsl
-from kfp.dsl import InputPath, OutputPath, component
+from kfp.dsl import InputPath, OutputPath, component, Artifact
 from kubernetes.client.models import V1EnvVar, V1SecretKeySelector
+from typing import NamedTuple
+
 
 web_downloader_op = kfp.components.load_component_from_url(
     'https://raw.githubusercontent.com/EvkaAki/download-component/master/component.yaml'
@@ -31,17 +33,21 @@ def mock_model(data_path: InputPath(), model_path: OutputPath()):
     print(df.head(3))
 
 
+class MyOutputs(NamedTuple):
+    signed_output: Artifact
+
+
 @dsl.pipeline(name='clean_experiment')
-def pipeline(url: str):
+def pipeline(url: str) -> MyOutputs:
     data_job = web_downloader_op(url=url)
     mock_model_task = mock_model(data_path=data_job.outputs['data_path'])
 
     sign_task = sign_data_op(artefact_path=mock_model_task.outputs['model_path']).after(mock_model_task)
     clean_data_op(pod_path = data_job.outputs['pod_path']).after(sign_task)
 
-    return {
-        "signed_output": sign_task.outputs["signed_artefact_path"]
-    }
+    return MyOutputs(
+        signed_output=sign_task.outputs["signed_artefact_path"]
+    )
 
 
 if __name__ == '__main__':
