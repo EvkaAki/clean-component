@@ -34,7 +34,7 @@ def delete_artifacts(pod_name):
 
             try:
                 print("Artefact to delete: " + str(obj._object_name) + " in bucket: "+ str('mlpipeline'))
-                minio_client.remove_object(str(bucket.name), str(obj._object_name))
+                minio_client.remove_object('mlpipeline', str(obj._object_name))
             except S3Error as exc:
                 print("error occurred while deleting artefact.", exc)
 
