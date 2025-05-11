@@ -38,6 +38,7 @@ def pipeline(url: str):
 
     sign_task = sign_data_op(artefact_path=mock_model_task.outputs['model_path']).after(mock_model_task)
     clean_data_op(pod_path = data_job.outputs['pod_path']).after(sign_task)
+    dsl.Output("signed_output", sign_task.outputs["signed_artefact_path"])
 
 
 if __name__ == '__main__':

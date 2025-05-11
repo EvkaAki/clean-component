@@ -49,6 +49,10 @@ components:
           artifactType:
             schemaTitle: system.Artifact
             schemaVersion: 0.0.1
+    outputDefinitions:
+      parameters:
+        signed_artefact_path:
+          parameterType: STRING
 deploymentSpec:
   executors:
     exec-clear-data:
@@ -110,6 +114,8 @@ deploymentSpec:
         args:
         - --artefact-path
         - '{{$.inputs.artifacts[''artefact_path''].path}}'
+        - --signed-artefact-path
+        - '{{$.outputs.parameters[''signed_artefact_path''].output_file}}'
         command:
         - python3
         - /app/sign.py
